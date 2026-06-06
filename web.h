@@ -1,0 +1,51 @@
+#pragma once
+#include <WebServer.h>
+#include "servo.h"
+
+WebServer server(80);
+
+const char* html = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Servo Cam</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; background: #111; color: #fff; }
+    img { width: 100%; max-width: 640px; border-radius: 8px; }
+    input[type=range] { width: 80%; max-width: 400px; margin-top: 16px; }
+    #angle { font-size: 1.5em; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Servo Cam</h1>
+  <img id="stream">
+  <p id="angle">90&deg;</p>
+  <input type="range" min="0" max="180" value="90"
+    oninput="document.getElementById('angle').innerHTML=this.value+'&deg;';
+             fetch('/set?angle='+this.value)">
+  <script>
+    document.getElementById('stream').src = 'http://' + location.hostname + ':81/stream';
+  </script>
+</body>
+</html>
+)rawliteral";
+
+void handleRoot() {
+  server.send(200, "text/html", html);
+}
+
+void handleSet() {
+  if (server.hasArg("angle")) {
+    int angle = server.arg("angle").toInt();
+    setServoAngle(angle);
+  }
+  server.send(200, "text/plain", "ok");
+}
+
+void initServer() {
+  server.on("/", handleRoot);
+  server.on("/set", handleSet);
+  server.begin();
+  Serial.println("Server started on port 80");
+}
