@@ -60,7 +60,7 @@ def set_servo(angle):
 def track_face(x, y, w, h, frame_w):
     face_cx = x + w / 2
     normalized = face_cx / frame_w
-    angle = int(normalized * 180)
+    angle = int((1.0 - normalized) * 180)
     set_servo(angle)
 
 
