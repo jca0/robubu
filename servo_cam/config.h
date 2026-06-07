@@ -7,6 +7,11 @@ const char* WIFI_PASS = "4799518885";
 // Servo
 static const int SERVO_PIN = 2;
 
+// I2S Audio (MAX98357A)
+#define I2S_DOUT 4   // D3 - DIN
+#define I2S_BCLK 5   // D4 - BCLK
+#define I2S_LRC  6   // D5 - LRC
+
 // XIAO ESP32S3 Sense camera pins
 #define PWDN_GPIO_NUM  -1
 #define RESET_GPIO_NUM -1

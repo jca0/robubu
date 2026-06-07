@@ -1,7 +1,7 @@
 #pragma once
 #include <WebServer.h>
 #include "servo.h"
-#include "audio_data.h"
+#include "audio.h"
 
 WebServer server(80);
 
@@ -58,9 +58,8 @@ void handleSet() {
 }
 
 void handleVoice() {
-  int idx = random(0, audio_clip_count);
-  const AudioClip& clip = audio_clips[idx];
-  server.send_P(200, "audio/mpeg", (const char*)clip.data, clip.len);
+  playRandomClip();
+  server.send(200, "text/plain", "ok");
 }
 
 void initServer() {

@@ -2,6 +2,7 @@
 #include "config.h"
 #include "camera.h"
 #include "servo.h"
+#include "audio.h"
 #include "cam_stream.h"
 #include "web.h"
 
@@ -25,10 +26,12 @@ void setup() {
   initCamera();
   initWiFi();
   initServo();
+  initAudio();
   initStream();
   initServer();
 }
 
 void loop() {
   server.handleClient();
+  handleAudioLoop();
 }
