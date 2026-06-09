@@ -9,7 +9,14 @@ void initServo() {
   myServo.write(90);
 }
 
+static int currentServoAngle = 90;
+
 void setServoAngle(int angle) {
   angle = constrain(angle, 0, 180);
+  currentServoAngle = angle;
   myServo.write(angle);
+}
+
+int getServoAngle() {
+  return currentServoAngle;
 }

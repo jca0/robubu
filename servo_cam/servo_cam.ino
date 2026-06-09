@@ -1,10 +1,15 @@
 #include <WiFi.h>
 #include "config.h"
-#include "camera.h"
 #include "servo.h"
 #include "audio.h"
-#include "cam_stream.h"
 #include "web.h"
+
+bool manualMode = false;
+
+static int servoAngle = 0;
+static int servoDir = 1;
+static unsigned long lastServoMove = 0;
+static const int SERVO_STEP_MS = 30;
 
 void initWiFi() {
   WiFi.begin(WIFI_SSID, WIFI_PASS);
@@ -20,18 +25,36 @@ void initWiFi() {
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial) { delay(10); }
   delay(1000);
 
-  initCamera();
   initWiFi();
   initServo();
   initAudio();
-  initStream();
   initServer();
+  Serial.println("Ready");
 }
 
 void loop() {
   server.handleClient();
   handleAudioLoop();
+
+  if (manualMode) return;
+
+  if (!isAudioPlaying()) {
+    playRandomClip();
+  }
+
+  unsigned long now = millis();
+  if (now - lastServoMove >= SERVO_STEP_MS) {
+    lastServoMove = now;
+    servoAngle += servoDir;
+    if (servoAngle >= 180) {
+      servoAngle = 180;
+      servoDir = -1;
+    } else if (servoAngle <= 0) {
+      servoAngle = 0;
+      servoDir = 1;
+    }
+    setServoAngle(servoAngle);
+  }
 }
